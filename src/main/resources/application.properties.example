@@ -1,0 +1,25 @@
+spring.application.name=cse-intellilearn-api
+server.port=8080
+
+# ==========================================
+# PostgreSQL Database Configuration
+# ==========================================
+spring.datasource.url=jdbc:postgresql://localhost:5432/myProject
+spring.datasource.username=postgres
+spring.datasource.password=YOUR_POSTGRES_PASSWORD_HERE
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA / Hibernate Settings for Postgres
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# JWT Configuration
+app.jwt.secret=YOUR_SUPER_SECRET_JWT_KEY_WITH_MINIMUM_256_BITS_LENGTH
+app.jwt.expiration-ms=86400000
+
+# Cloudinary Configuration
+cloudinary.cloud-name=your_cloud_name
+cloudinary.api-key=your_api_key
+cloudinary.api-secret=your_api_secret
