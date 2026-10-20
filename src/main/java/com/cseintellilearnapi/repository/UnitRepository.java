@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface UnitRepository extends JpaRepository<Unit, Long> {
+    List<Unit> findAllByOrderByUnitIdAsc();
     List<Unit> findBySubjectIdOrderByUnitNumberAsc(Long subjectId);
 }

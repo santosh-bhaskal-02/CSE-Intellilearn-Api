@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
+    List<Subject> findAllByOrderBySubjectIdAsc();
     List<Subject> findBySemesterIdOrderBySubjectIdAsc(Long semesterId);
 }

@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface SemesterRepository extends JpaRepository<Semester, Long> {
+    List<Semester> findAllByOrderBySemesterIdAsc();
     List<Semester> findByYearIdOrderBySemesterNumberAsc(Long yearId);
 }

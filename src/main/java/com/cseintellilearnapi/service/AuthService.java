@@ -5,6 +5,8 @@ import com.cseintellilearnapi.dto.auth.LoginRequest;
 import com.cseintellilearnapi.dto.auth.RegisterRequest;
 import com.cseintellilearnapi.dto.user.UserResponse;
 import com.cseintellilearnapi.entity.User;
+import com.cseintellilearnapi.exception.ConflictException;
+import com.cseintellilearnapi.exception.ResourceNotFoundException;
 import com.cseintellilearnapi.repository.UserRepository;
 import com.cseintellilearnapi.security.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,8 +15,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -34,7 +38,7 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new IllegalArgumentException("Email is already registered!");
+            throw new ConflictException("Email is already registered!");
         }
 
         User user = new User();
@@ -58,6 +62,7 @@ public class AuthService {
         return new AuthResponse(token, new UserResponse(savedUser));
     }
 
+    @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
@@ -67,14 +72,15 @@ public class AuthService {
         String token = tokenProvider.generateToken(authentication);
 
         User user = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", loginRequest.getEmail()));
 
         return new AuthResponse(token, new UserResponse(user));
     }
 
+    @Transactional(readOnly = true)
     public UserResponse getCurrentUser(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
         return new UserResponse(user);
     }
 }

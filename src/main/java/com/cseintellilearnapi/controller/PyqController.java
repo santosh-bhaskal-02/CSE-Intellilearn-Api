@@ -1,7 +1,7 @@
 package com.cseintellilearnapi.controller;
 
 import com.cseintellilearnapi.entity.PreviousYearQuestion;
-import com.cseintellilearnapi.repository.PreviousYearQuestionRepository;
+import com.cseintellilearnapi.service.PyqService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,24 +13,20 @@ import java.util.Map;
 @RequestMapping("/api/v1/pyqs")
 public class PyqController {
 
-    private final PreviousYearQuestionRepository pyqRepository;
+    private final PyqService pyqService;
 
-    public PyqController(PreviousYearQuestionRepository pyqRepository) {
-        this.pyqRepository = pyqRepository;
+    public PyqController(PyqService pyqService) {
+        this.pyqService = pyqService;
     }
 
     @GetMapping("/{subject_id}")
     public ResponseEntity<List<PreviousYearQuestion>> getPyqsBySubject(@PathVariable("subject_id") Long subjectId) {
-        return ResponseEntity.ok(pyqRepository.findBySubjectIdOrderByExamYearDesc(subjectId));
+        return ResponseEntity.ok(pyqService.getPyqsBySubject(subjectId));
     }
 
     @PostMapping
     public ResponseEntity<?> addPyq(@RequestBody PreviousYearQuestion pyq) {
-        if (pyq.getSubjectId() == null || pyq.getExamYear() == null) {
-            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Subject and exam year are required"));
-        }
-
-        PreviousYearQuestion saved = pyqRepository.save(pyq);
+        PreviousYearQuestion saved = pyqService.addPyq(pyq);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
                 "success", true,
                 "message", "PYQ added successfully",
